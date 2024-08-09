@@ -4,6 +4,7 @@ import type { ExportedDeclarations, Project } from 'ts-morph'
 import { SourceFile } from 'ts-morph'
 import { getSymbolDescription, resolveExpression } from '@tsxmod/utils'
 import matter from 'gray-matter'
+import micromatch from 'micromatch'
 
 import { filePathToPathname } from './file-path-to-pathname'
 import { getExamplesFromSourceFile } from './get-examples'
@@ -92,7 +93,9 @@ export function getAllData<Type extends { frontMatter: Record<string, any> }>({
     : null
   const allModulePaths = Object.keys(allModules)
   const allPaths = [
-    ...allModulePaths,
+    ...allModulePaths.filter((modulePath) =>
+      micromatch.isMatch(modulePath, globPattern)
+    ),
     ...(typeScriptSourceFiles?.map((file) => file.getFilePath()) ?? []),
   ]
 
